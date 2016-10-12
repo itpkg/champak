@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/itpkg/champak/web"
 	"github.com/itpkg/champak/web/i18n"
+	"github.com/rs/cors"
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 )
@@ -27,6 +28,7 @@ func (p *Engine) Shell() []cli.Command {
 					gin.SetMode(gin.ReleaseMode)
 				}
 				rt := gin.Default()
+
 				theme := viper.GetString("server.theme")
 				// rt.LoadHTMLGlob(fmt.Sprintf("templates/%s/**/*", viper.GetString("server.theme")))
 				rt.Static("/assets", fmt.Sprintf("./assets/%s", theme))
@@ -42,6 +44,12 @@ func (p *Engine) Shell() []cli.Command {
 					return err
 				}
 				rt.SetHTMLTemplate(tpl)
+
+				// rt.Use(sessions.Sessions(
+				// 	"_session_",
+				// 	sessions.NewCookieStore([]byte(viper.GetString("secrets.session"))),
+				// ))
+
 				rt.Use(i18n.LocaleHandler(p.Logger))
 
 				web.Loop(func(en web.Engine) error {
@@ -51,13 +59,12 @@ func (p *Engine) Shell() []cli.Command {
 
 				adr := fmt.Sprintf(":%d", viper.GetInt("server.port"))
 
-				hnd := rt
-				// hnd := cors.New(cors.Options{
-				// 	AllowCredentials: true,
-				// 	AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
-				// 	AllowedHeaders:   []string{"*"},
-				// 	Debug:            !IsProduction(),
-				// }).Handler(rt)
+				hnd := cors.New(cors.Options{
+					AllowCredentials: true,
+					AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
+					AllowedHeaders:   []string{"*"},
+					Debug:            !IsProduction(),
+				}).Handler(rt)
 
 				if IsProduction() {
 					return endless.ListenAndServe(adr, hnd)
@@ -165,9 +172,10 @@ func init() {
 		"theme": "bootstrap4",
 	})
 	viper.SetDefault("secrets", map[string]interface{}{
-		"jwt":  web.RandomStr(32),
-		"aes":  web.RandomStr(32),
-		"hmac": web.RandomStr(32),
+		"jwt":     web.RandomStr(32),
+		"aes":     web.RandomStr(32),
+		"hmac":    web.RandomStr(32),
+		"session": web.RandomStr(32),
 	})
 
 	viper.SetDefault("workers", map[string]interface{}{

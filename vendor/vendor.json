@@ -43,6 +43,12 @@
 			"revisionTime": "2016-09-21T21:35:50Z"
 		},
 		{
+			"checksumSHA1": "mXuhmsoWRrMxD3j836MtLNirGiM=",
+			"path": "github.com/boj/redistore",
+			"revision": "fc113767cd6b051980f260d6dbe84b2740c46ab0",
+			"revisionTime": "2016-01-28T11:33:10Z"
+		},
+		{
 			"checksumSHA1": "GqkBIw2lUA6lv/jgh9WIyR0YdWY=",
 			"path": "github.com/facebookgo/inject",
 			"revision": "cc1aa653e50f6a9893bcaef89e673e5b24e1e97b",
@@ -79,6 +85,12 @@
 			"revisionTime": "2016-08-10T23:49:51Z"
 		},
 		{
+			"checksumSHA1": "JzD4ByBcCdfLb+oorXTDFMcXAnc=",
+			"path": "github.com/gin-gonic/contrib/sessions",
+			"revision": "36474aa46d468e939bd596998467d6e9e2b88edd",
+			"revisionTime": "2016-10-11T09:33:47Z"
+		},
+		{
 			"checksumSHA1": "RDDo6zqKb6Mpa4EOFv0RT8ryXvQ=",
 			"path": "github.com/gin-gonic/gin",
 			"revision": "3900df04d2a88e22beaf6a2970c63648b9e1b0e1",
@@ -113,6 +125,24 @@
 			"path": "github.com/golang/protobuf/proto",
 			"revision": "df1d3ca07d2d07bba352d5b73c4313b4e2a6203e",
 			"revisionTime": "2016-09-27T20:09:49Z"
+		},
+		{
+			"checksumSHA1": "g/V4qrXjUGG9B+e3hB+4NAYJ5Gs=",
+			"path": "github.com/gorilla/context",
+			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
+			"revisionTime": "2016-08-17T18:46:32Z"
+		},
+		{
+			"checksumSHA1": "veX5bpYOBjZZWMyWxXxys8EH9d8=",
+			"path": "github.com/gorilla/securecookie",
+			"revision": "fa5329f913702981df43dcb2a380bac429c810b5",
+			"revisionTime": "2016-10-03T05:16:01Z"
+		},
+		{
+			"checksumSHA1": "f1dfF3vmO95G/hbwMYlFru/FfMo=",
+			"path": "github.com/gorilla/sessions",
+			"revision": "ca9ada44574153444b00d3fd9c8559e4cc95f896",
+			"revisionTime": "2016-09-22T14:58:04Z"
 		},
 		{
 			"checksumSHA1": "8OPDk+bKyRGJoKcS4QNw9F7dpE8=",
