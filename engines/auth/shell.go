@@ -2,6 +2,7 @@ package auth
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 
 	"github.com/facebookgo/inject"
@@ -27,7 +28,19 @@ func (p *Engine) Shell() []cli.Command {
 					gin.SetMode(gin.ReleaseMode)
 				}
 				rt := gin.Default()
-				// rt.LoadHTMLGlob(fmt.Sprintf("themes/%s/**/*", viper.GetString("server.theme")))
+				// rt.LoadHTMLGlob(fmt.Sprintf("templates/%s/**/*", viper.GetString("server.theme")))
+				tpl, err := template.
+					New("").
+					Funcs(template.FuncMap{
+						"T": p.I18n.T,
+					}).
+					ParseGlob(
+						fmt.Sprintf("templates/%s/**/*", viper.GetString("server.theme")),
+					)
+				if err != nil {
+					return err
+				}
+				rt.SetHTMLTemplate(tpl)
 				rt.Use(i18n.LocaleHandler(p.Logger))
 
 				web.Loop(func(en web.Engine) error {

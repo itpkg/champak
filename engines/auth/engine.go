@@ -5,7 +5,6 @@ import (
 
 	"github.com/SermoDigital/jose/crypto"
 	"github.com/facebookgo/inject"
-	"github.com/gin-gonic/gin"
 	"github.com/itpkg/champak/web"
 	"github.com/itpkg/champak/web/cache"
 	"github.com/itpkg/champak/web/i18n"
@@ -46,9 +45,6 @@ func (p *Engine) Map(inj *inject.Graph) error {
 	)
 
 }
-
-//Mount mount web point
-func (p *Engine) Mount(*gin.Engine) {}
 
 //Worker do background job
 func (p *Engine) Worker() {
