@@ -1,0 +1,11 @@
+# editor
+.*.swp
+.*.un~
+
+# build
+/dist
+
+# go
+/vendor/*/
+
+# js
