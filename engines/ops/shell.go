@@ -2,6 +2,7 @@ package ops
 
 import (
 	"crypto/x509/pkix"
+	"database/sql"
 	"fmt"
 	"html/template"
 	"os"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/itpkg/champak/engines/auth"
+	"github.com/itpkg/champak/web"
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 )
@@ -20,6 +22,171 @@ import (
 func (p *Engine) Shell() []cli.Command {
 	return []cli.Command{
 
+		{
+			Name:    "database",
+			Aliases: []string{"db"},
+			Usage:   "database operations",
+			Subcommands: []cli.Command{
+				{
+					Name:    "example",
+					Usage:   "scripts example for create database and user",
+					Aliases: []string{"e"},
+					Action: auth.Action(func(*cli.Context) error {
+						drv := viper.GetString("database.driver")
+						args := viper.GetStringMapString("database.args")
+						var err error
+						switch drv {
+						case "postgres":
+							fmt.Printf("CREATE USER %s WITH PASSWORD '%s';\n", args["user"], args["password"])
+							fmt.Printf("CREATE DATABASE %s WITH ENCODING='UTF8';\n", args["dbname"])
+							fmt.Printf("GRANT ALL PRIVILEGES ON DATABASE %s TO %s;\n", args["dbname"], args["user"])
+						default:
+							err = fmt.Errorf("unknown driver %s", drv)
+						}
+						return err
+					}),
+				},
+				{
+					Name:    "migrate",
+					Usage:   "migrate the database",
+					Aliases: []string{"m"},
+					Action: auth.Action(func(*cli.Context) error {
+						ver, err := goose.GetMostRecentDBVersion(dbMigrationsDir())
+						if err != nil {
+							return err
+						}
+						return goose.RunMigrations(dbConf(), dbMigrationsDir(), ver)
+					}),
+				},
+				{
+					Name:    "rollback",
+					Usage:   "rollback the database",
+					Aliases: []string{"r"},
+					Action: auth.Action(func(*cli.Context) error {
+						cnf := dbConf()
+						crt, err := goose.GetDBVersion(cnf)
+						if err != nil {
+							return err
+						}
+						ver, err := goose.GetPreviousDBVersion(dbMigrationsDir(), crt)
+						if err != nil {
+							return err
+						}
+						return goose.RunMigrations(cnf, dbMigrationsDir(), ver)
+					}),
+				},
+				{
+					Name:    "version",
+					Usage:   "show database scheme version",
+					Aliases: []string{"v"},
+					Action: auth.Action(func(*cli.Context) error {
+						cnf := dbConf()
+						migs, err := goose.CollectMigrations(dbMigrationsDir(), 0, ((1 << 63) - 1))
+						if err != nil {
+							return err
+						}
+						db, err := goose.OpenDBFromDBConf(cnf)
+						if err != nil {
+							return err
+						}
+						defer db.Close()
+						if _, err = goose.EnsureDBVersion(cnf, db); err != nil {
+							return err
+						}
+						fmt.Println("    Applied At                  Migration")
+						for _, mig := range migs {
+							var row goose.MigrationRecord
+							q := fmt.Sprintf("SELECT tstamp, is_applied FROM goose_db_version WHERE version_id=%d ORDER BY tstamp DESC LIMIT 1", mig.Version)
+							e := db.QueryRow(q).Scan(&row.TStamp, &row.IsApplied)
+
+							if e != nil && e != sql.ErrNoRows {
+								return e
+							}
+
+							var appliedAt string
+
+							if row.IsApplied {
+								appliedAt = row.TStamp.Format(time.ANSIC)
+							} else {
+								appliedAt = "Pending"
+							}
+
+							fmt.Printf("    %-24s -- %v\n", appliedAt, mig.Source)
+						}
+						return nil
+					}),
+				},
+				{
+					Name:    "connect",
+					Usage:   "connect database",
+					Aliases: []string{"c"},
+					Action: auth.Action(func(*cli.Context) error {
+						drv := viper.GetString("database.driver")
+						args := viper.GetStringMapString("database.args")
+						var err error
+						switch drv {
+						case "postgres":
+							err = web.Shell("psql",
+								"-h", args["host"],
+								"-p", args["port"],
+								"-U", args["user"],
+								args["dbname"],
+							)
+						default:
+							err = fmt.Errorf("unknown driver %s", drv)
+						}
+						return err
+					}),
+				},
+				{
+					Name:    "create",
+					Usage:   "create database",
+					Aliases: []string{"n"},
+					Action: auth.Action(func(*cli.Context) error {
+						drv := viper.GetString("database.driver")
+						args := viper.GetStringMapString("database.args")
+						var err error
+						switch drv {
+						case "postgres":
+							err = web.Shell("psql",
+								"-h", args["host"],
+								"-p", args["port"],
+								"-U", "postgres",
+								"-c", fmt.Sprintf(
+									"CREATE DATABASE %s WITH ENCODING='UTF8'",
+									args["dbname"],
+								),
+							)
+						default:
+							err = fmt.Errorf("unknown driver %s", drv)
+						}
+						return err
+					}),
+				},
+				{
+					Name:    "drop",
+					Usage:   "drop database",
+					Aliases: []string{"d"},
+					Action: auth.Action(func(*cli.Context) error {
+						drv := viper.GetString("database.driver")
+						args := viper.GetStringMapString("database.args")
+						var err error
+						switch drv {
+						case "postgres":
+							err = web.Shell("psql",
+								"-h", args["host"],
+								"-p", args["port"],
+								"-U", "postgres",
+								"-c", fmt.Sprintf("DROP DATABASE %s", args["dbname"]),
+							)
+						default:
+							err = fmt.Errorf("unknown driver %s", drv)
+						}
+						return err
+					}),
+				},
+			},
+		},
 		{
 			Name:    "generate",
 			Aliases: []string{"g"},
@@ -249,7 +416,7 @@ func (p *Engine) Shell() []cli.Command {
 							cli.ShowCommandHelp(c, "migration")
 							return nil
 						}
-						root := migrationRoot()
+						root := dbMigrationsDir()
 						if err := os.MkdirAll(root, 0700); err != nil {
 							return err
 						}
@@ -266,8 +433,4 @@ func (p *Engine) Shell() []cli.Command {
 			},
 		},
 	}
-}
-
-func migrationRoot() string {
-	return path.Join("db", "migrations")
 }
