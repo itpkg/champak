@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/itpkg/champak/web"
 	"github.com/itpkg/champak/web/i18n"
-	"github.com/rs/cors"
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 )
@@ -28,14 +27,16 @@ func (p *Engine) Shell() []cli.Command {
 					gin.SetMode(gin.ReleaseMode)
 				}
 				rt := gin.Default()
+				theme := viper.GetString("server.theme")
 				// rt.LoadHTMLGlob(fmt.Sprintf("templates/%s/**/*", viper.GetString("server.theme")))
+				rt.Static("/assets", fmt.Sprintf("./assets/%s", theme))
 				tpl, err := template.
 					New("").
 					Funcs(template.FuncMap{
 						"T": p.I18n.T,
 					}).
 					ParseGlob(
-						fmt.Sprintf("templates/%s/**/*", viper.GetString("server.theme")),
+						fmt.Sprintf("templates/%s/**/*", theme),
 					)
 				if err != nil {
 					return err
@@ -49,12 +50,14 @@ func (p *Engine) Shell() []cli.Command {
 				})
 
 				adr := fmt.Sprintf(":%d", viper.GetInt("server.port"))
-				hnd := cors.New(cors.Options{
-					AllowCredentials: true,
-					AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
-					AllowedHeaders:   []string{"*"},
-					Debug:            !IsProduction(),
-				}).Handler(rt)
+
+				hnd := rt
+				// hnd := cors.New(cors.Options{
+				// 	AllowCredentials: true,
+				// 	AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
+				// 	AllowedHeaders:   []string{"*"},
+				// 	Debug:            !IsProduction(),
+				// }).Handler(rt)
 
 				if IsProduction() {
 					return endless.ListenAndServe(adr, hnd)

@@ -1,6 +1,9 @@
 package i18n
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	logging "github.com/op/go-logging"
 	"golang.org/x/text/language"
@@ -32,6 +35,16 @@ func LocaleHandler(lg *logging.Logger) gin.HandlerFunc {
 			lg.Error(err)
 			tag = language.AmericanEnglish
 		}
-		c.Set(key, &tag)
+
+		//Write cookie
+		http.SetCookie(c.Writer, &http.Cookie{
+			Name:    key,
+			Value:   tag.String(),
+			Expires: time.Now().Add(7 * 24 * time.Hour),
+			Path:    "/",
+		})
+
+		c.Set(key, tag.String())
+
 	}
 }
