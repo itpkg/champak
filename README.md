@@ -1,5 +1,5 @@
 # champak
-A web application build by go-lang and vuejs.
+A web application build by go-lang and emberjs.
 
 ## Install go
 
@@ -53,7 +53,7 @@ GRANT ALL PRIVILEGES ON DATABASE db-name TO user-name;
 
 * ExecStartPre=/usr/bin/postgresql-check-db-dir ${PGROOT}/data (code=exited, status=1/FAILURE)
 
-``` 
+```
 initdb  -D '/var/lib/postgres/data'
 ```
 
@@ -61,7 +61,7 @@ initdb  -D '/var/lib/postgres/data'
 
 ```
 cd $GOPATH/src/github.com/itpkg/champak
-make 
+make
 ls -lh dist
 ```
 
