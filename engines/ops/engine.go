@@ -4,7 +4,6 @@ import (
 	"github.com/facebookgo/inject"
 	"github.com/gin-gonic/gin"
 	"github.com/itpkg/champak/web"
-	"github.com/urfave/cli"
 )
 
 //Engine engine model
@@ -24,10 +23,6 @@ func (p *Engine) Worker() {
 
 }
 
-//Shell command options
-func (p *Engine) Shell() []cli.Command {
-	return []cli.Command{}
-}
 func init() {
 	web.Register(&Engine{})
 }

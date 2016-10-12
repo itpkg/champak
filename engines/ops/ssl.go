@@ -1,4 +1,4 @@
-package auth
+package ops
 
 import (
 	"crypto/rand"
@@ -13,11 +13,11 @@ import (
 )
 
 //WritePemFile wirte to a pem format file
-func WritePemFile(file, _type string, buf []byte) error {
-	if err := os.MkdirAll(path.Dir(file), 0700); err != nil {
+func WritePemFile(file, _type string, buf []byte, mode os.FileMode) error {
+	if err := os.MkdirAll(path.Dir(file), 0755); err != nil {
 		return err
 	}
-	fd, err := os.OpenFile(file, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+	fd, err := os.OpenFile(file, os.O_WRONLY|os.O_CREATE|os.O_EXCL, mode)
 	if err != nil {
 		return err
 	}
