@@ -6,6 +6,9 @@ import (
 	"html/template"
 	"os"
 	"path"
+	"time"
+
+	"bitbucket.org/liamstask/goose/lib/goose"
 
 	"github.com/BurntSushi/toml"
 	"github.com/itpkg/champak/engines/auth"
@@ -234,12 +237,37 @@ func (p *Engine) Shell() []cli.Command {
 					Name:    "migration",
 					Usage:   "generate migration file",
 					Aliases: []string{"m"},
-					Action: func(*cli.Context) error {
-						//TODO
-						return nil
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "name, n",
+							Usage: "name",
+						},
 					},
+					Action: auth.Action(func(c *cli.Context) error {
+						name := c.String("name")
+						if len(name) == 0 {
+							cli.ShowCommandHelp(c, "migration")
+							return nil
+						}
+						root := migrationRoot()
+						if err := os.MkdirAll(root, 0700); err != nil {
+							return err
+						}
+						pth, err := goose.CreateMigration(
+							c.String("name"),
+							"sql",
+							root,
+							time.Now(),
+						)
+						fmt.Printf("generate file %s\n", pth)
+						return err
+					}),
 				},
 			},
 		},
 	}
+}
+
+func migrationRoot() string {
+	return path.Join("db", "migrations")
 }

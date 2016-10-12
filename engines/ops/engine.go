@@ -4,10 +4,12 @@ import (
 	"github.com/facebookgo/inject"
 	"github.com/gin-gonic/gin"
 	"github.com/itpkg/champak/web"
+	logging "github.com/op/go-logging"
 )
 
 //Engine engine model
 type Engine struct {
+	Logger *logging.Logger `inject:""`
 }
 
 //Map map objects
