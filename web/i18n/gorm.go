@@ -5,7 +5,6 @@ import (
 
 	"github.com/jinzhu/gorm"
 	logging "github.com/op/go-logging"
-	"golang.org/x/text/language"
 )
 
 //Migrate migrate database
@@ -31,11 +30,11 @@ type GormStore struct {
 }
 
 //Set set locale
-func (p *GormStore) Set(lng *language.Tag, code, message string) {
+func (p *GormStore) Set(lng string, code, message string) {
 	var l Locale
 	var err error
-	if p.Db.Where("lang = ? AND code = ?", lng.String(), code).First(&l).RecordNotFound() {
-		l.Lang = lng.String()
+	if p.Db.Where("lang = ? AND code = ?", lng, code).First(&l).RecordNotFound() {
+		l.Lang = lng
 		l.Code = code
 		l.Message = message
 		err = p.Db.Create(&l).Error
@@ -49,9 +48,9 @@ func (p *GormStore) Set(lng *language.Tag, code, message string) {
 }
 
 //Get get locale
-func (p *GormStore) Get(lng *language.Tag, code string) string {
+func (p *GormStore) Get(lng string, code string) string {
 	var l Locale
-	if err := p.Db.Where("lang = ? AND code = ?", lng.String(), code).First(&l).Error; err != nil {
+	if err := p.Db.Where("lang = ? AND code = ?", lng, code).First(&l).Error; err != nil {
 		p.Logger.Error(err)
 	}
 	return l.Message
@@ -59,16 +58,16 @@ func (p *GormStore) Get(lng *language.Tag, code string) string {
 }
 
 //Del del locale
-func (p *GormStore) Del(lng *language.Tag, code string) {
-	if err := p.Db.Where("lang = ? AND code = ?", lng.String(), code).Delete(Locale{}).Error; err != nil {
+func (p *GormStore) Del(lng string, code string) {
+	if err := p.Db.Where("lang = ? AND code = ?", lng, code).Delete(Locale{}).Error; err != nil {
 		p.Logger.Error(err)
 	}
 }
 
 //Keys list locale keys
-func (p *GormStore) Keys(lng *language.Tag) ([]string, error) {
+func (p *GormStore) Keys(lng string) ([]string, error) {
 	var keys []string
-	err := p.Db.Model(&Locale{}).Where("lang = ?", lng.String()).Pluck("code", &keys).Error
+	err := p.Db.Model(&Locale{}).Where("lang = ?", lng).Pluck("code", &keys).Error
 
 	return keys, err
 }

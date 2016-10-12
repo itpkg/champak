@@ -11,7 +11,7 @@ import (
 )
 
 var logger = logging.MustGetLogger("test")
-var lang = &language.SimplifiedChinese
+var lang = language.SimplifiedChinese.String()
 
 func TestDatabase(t *testing.T) {
 	db, err := gorm.Open("sqlite3", "test.db")

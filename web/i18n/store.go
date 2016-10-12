@@ -1,22 +1,21 @@
 package i18n
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
+	"github.com/go-ini/ini"
 	logging "github.com/op/go-logging"
 	"golang.org/x/text/language"
 )
 
 //Store i18n store
 type Store interface {
-	Set(lang *language.Tag, code, message string)
-	Get(lang *language.Tag, code string) string
-	Del(lang *language.Tag, code string)
-	Keys(lang *language.Tag) ([]string, error)
+	Set(lang string, code, message string)
+	Get(lang string, code string) string
+	Del(lang string, code string)
+	Keys(lang string) ([]string, error)
 }
 
 //I18n i18n helper
@@ -33,80 +32,30 @@ func (p *I18n) Exist(lang string) bool {
 	return ok
 }
 
-//Items list all items
-func (p *I18n) Items(lng string) map[string]interface{} {
-	rt := make(map[string]interface{})
-	if items, ok := p.Locales[lng]; ok {
-		for k, v := range items {
-			if strings.HasPrefix(k, "web.") {
-				k = k[4:]
-				codes := strings.Split(k, ".")
-				tmp := rt
-				for i, c := range codes {
-					if i+1 == len(codes) {
-						tmp[c] = v
-					} else {
-						if tmp[c] == nil {
-							tmp[c] = make(map[string]interface{})
-						}
-						tmp = tmp[c].(map[string]interface{})
-					}
-				}
-
-			}
-		}
-	}
-	return rt
-}
-
 //Load load locales from filesystem
 func (p *I18n) Load(dir string) error {
-	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		p.Logger.Debugf("Find locale file %s", path)
-		if err != nil {
-			return err
-		}
-		if info.Mode().IsRegular() {
-			ss := strings.Split(info.Name(), ".")
-			if len(ss) != 3 {
-				return fmt.Errorf("Ingnore locale file %s", info.Name())
-			}
-			code := ss[0]
-			lang := language.Make(ss[1])
-
-			fd, err := os.Open(path)
+	return filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		const ext = ".ini"
+		name := info.Name()
+		if info.Mode().IsRegular() && filepath.Ext(name) == ext {
+			p.Logger.Debugf("Find locale file %s", path)
 			if err != nil {
 				return err
 			}
-			defer fd.Close()
-			sc := bufio.NewScanner(fd)
-			for sc.Scan() {
-				line := sc.Text()
-				idx := strings.Index(line, "=")
-				if idx <= 0 || line[0] == '#' {
-					continue
-				}
-				p.set(&lang, strings.TrimSpace(code+"."+line[0:idx]), strings.TrimSpace(line[idx+1:len(line)]))
+			lang := name[0 : len(name)-len(ext)]
+			if _, err := language.Parse(lang); err != nil {
+				return err
+			}
+			cfg, err := ini.Load(path)
+			if err != nil {
+				return err
 			}
 
+			p.Locales[lang] = cfg.Section(ini.DEFAULT_SECTION).KeysHash()
+			p.Logger.Infof("find %d items", len(p.Locales[lang]))
 		}
 		return nil
-	}); err != nil {
-		return err
-	}
-
-	for lang := range p.Locales {
-		lng := language.Make(lang)
-		ks, err := p.Store.Keys(&lng)
-		if err != nil {
-			return err
-		}
-		for _, k := range ks {
-			p.Locales[lang][k] = p.Store.Get(&lng, k)
-		}
-		p.Logger.Debugf("Find locale %s, %d items.", lang, len(p.Locales[lang]))
-	}
-	return nil
+	})
 }
 
 func (p *I18n) set(lng *language.Tag, code, message string) {
@@ -117,20 +66,16 @@ func (p *I18n) set(lng *language.Tag, code, message string) {
 	p.Locales[lang][code] = message
 }
 
-//Ts translate by lang
-func (p *I18n) Ts(lng string, code string, args ...interface{}) string {
-	l := language.Make(lng)
-	return p.T(&l, code, args...)
-}
-
 //T translate by lang tag
-func (p *I18n) T(lng *language.Tag, code string, args ...interface{}) string {
-	lang := lng.String()
-	msg := p.Store.Get(lng, code)
+func (p *I18n) T(lang string, code string, args ...interface{}) string {
+	msg := p.Store.Get(lang, code)
 	if len(msg) == 0 {
 		if items, ok := p.Locales[lang]; ok {
 			msg = items[code]
 		}
+	}
+	if len(msg) == 0 {
+		msg = code
 	}
 	return fmt.Sprintf(msg, args...)
 }
