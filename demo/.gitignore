@@ -1,3 +1,4 @@
 *.toml
 /tmp
 /etc
+/assets/attachmets

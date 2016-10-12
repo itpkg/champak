@@ -12,42 +12,42 @@ import (
 
 //LeaveWord leave word
 type LeaveWord struct {
-	ID        uint      `gorm:"primary_key" json:"id"`
-	Content   string    `gorm:"not null;type:text" json:"content"`
-	CreatedAt time.Time `gorm:"not null;default:current_timestamp" json:"created_at"`
+	ID        uint      `json:"id"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 //Notice notice
 type Notice struct {
 	web.Model
-	Lang    string `gorm:"not null;type:varchar(8);index" json:"lang"`
-	Content string `gorm:"not null;type:text" json:"content"`
+	Lang    string `json:"lang"`
+	Content string `json:"content"`
 }
 
 //Setting setting
 type Setting struct {
 	web.Model
 
-	Key    string `gorm:"not null;unique;type:VARCHAR(255)"`
-	Val    []byte `gorm:"not null"`
-	Encode bool   `gorm:"not null"`
+	Key    string
+	Val    []byte
+	Encode bool
 }
 
 //User user model
 type User struct {
 	web.Model
-	Email    string `gorm:"not null;index;type:VARCHAR(255)" json:"email"`
-	UID      string `gorm:"not null;unique;type:char(36)" json:"uid"`
-	Home     string `gorm:"not null;type:VARCHAR(255)" json:"home"`
-	Logo     string `gorm:"not null;type:VARCHAR(255)" json:"logo"`
-	Name     string `gorm:"not null;type:VARCHAR(255)" json:"name"`
+	Email    string `json:"email"`
+	UID      string `json:"uid"`
+	Home     string `json:"home"`
+	Logo     string `json:"logo"`
+	Name     string `json:"name"`
 	Password []byte `json:"-"`
 
-	ProviderType string `gorm:"not null;default:'unknown';index;type:VARCHAR(255)" json:"provider_type"`
-	ProviderID   string `gorm:"not null;index;type:VARCHAR(255)" json:"provider_id"`
+	ProviderType string `json:"provider_type"`
+	ProviderID   string `json:"provider_id"`
 
 	LastSignIn  *time.Time `json:"last_sign_in"`
-	SignInCount uint       `gorm:"not null;default:0" json:"sign_in_count"`
+	SignInCount uint       `json:"sign_in_count"`
 	ConfirmedAt *time.Time `json:"confirmed_at"`
 	LockedAt    *time.Time `json:"locked_at"`
 
@@ -82,20 +82,20 @@ func (p User) String() string {
 
 //Log model
 type Log struct {
-	ID        uint      `gorm:"primary_key" json:"id"`
-	UserID    uint      `gorm:"not null" json:"-"`
+	ID        uint      `json:"id"`
+	UserID    uint      `json:"-"`
 	User      User      `json:"-"`
-	Message   string    `gorm:"not null;type:VARCHAR(255)" json:"message"`
-	CreatedAt time.Time `gorm:"not null;default:current_timestamp" json:"created_at"`
+	Message   string    `json:"message"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 //Role role model
 type Role struct {
 	web.Model
 
-	Name         string `gorm:"not null;index;type:VARCHAR(255)"`
-	ResourceType string `gorm:"not null;default:'-';index;type:VARCHAR(255)"`
-	ResourceID   uint   `gorm:"not null;default:0"`
+	Name         string
+	ResourceType string
+	ResourceID   uint
 }
 
 func (p Role) String() string {
@@ -106,11 +106,11 @@ func (p Role) String() string {
 type Permission struct {
 	web.Model
 	User   User
-	UserID uint `gorm:"not null"`
+	UserID uint
 	Role   Role
-	RoleID uint      `gorm:"not null"`
-	Begin  time.Time `gorm:"not null;default:current_date;type:date"`
-	End    time.Time `gorm:"not null;default:'1000-1-1';type:date"`
+	RoleID uint
+	Begin  time.Time
+	End    time.Time
 }
 
 //EndS end to string
@@ -127,4 +127,17 @@ func (p *Permission) BeginS() string {
 func (p *Permission) Enable() bool {
 	now := time.Now()
 	return now.After(p.Begin) && now.Before(p.End)
+}
+
+//Attachment attachment
+type Attachment struct {
+	web.Model
+
+	Title     string
+	Name      string
+	MediaType string
+	Summary   string
+
+	UserID uint
+	User   User
 }
