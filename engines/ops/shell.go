@@ -9,6 +9,8 @@ import (
 	"path"
 	"time"
 
+	"golang.org/x/text/language"
+
 	"bitbucket.org/liamstask/goose/lib/goose"
 
 	"github.com/BurntSushi/toml"
@@ -400,6 +402,7 @@ func (p *Engine) Shell() []cli.Command {
 						return err
 					}),
 				},
+
 				{
 					Name:    "migration",
 					Usage:   "generate migration file",
@@ -427,6 +430,41 @@ func (p *Engine) Shell() []cli.Command {
 							time.Now(),
 						)
 						fmt.Printf("generate file %s\n", pth)
+						return err
+					}),
+				},
+
+				{
+					Name:    "locale",
+					Usage:   "generate locale file",
+					Aliases: []string{"l"},
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "name, n",
+							Usage: "locale name",
+						},
+					},
+					Action: auth.Action(func(c *cli.Context) error {
+						name := c.String("name")
+						if len(name) == 0 {
+							cli.ShowCommandHelp(c, "locale")
+							return nil
+						}
+						lng, err := language.Parse(name)
+						if err != nil {
+							return err
+						}
+						const root = "locales"
+						if err = os.MkdirAll(root, 0700); err != nil {
+							return err
+						}
+						file := path.Join(root, fmt.Sprintf("%s.ini", lng.String()))
+						fmt.Printf("generate file %s\n", file)
+						fd, err := os.OpenFile(file, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+						if err != nil {
+							return err
+						}
+						defer fd.Close()
 						return err
 					}),
 				},
