@@ -28,7 +28,7 @@ func (p *Engine) Shell() []cli.Command {
 				}
 				rt := gin.Default()
 				// rt.LoadHTMLGlob(fmt.Sprintf("themes/%s/**/*", viper.GetString("server.theme")))
-				rt.Use(i18n.LocaleHandler)
+				rt.Use(i18n.LocaleHandler(p.Logger))
 
 				web.Loop(func(en web.Engine) error {
 					en.Mount(rt)

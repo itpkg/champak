@@ -1,6 +1,9 @@
 package auth
 
 import (
+	"crypto/aes"
+
+	"github.com/SermoDigital/jose/crypto"
 	"github.com/facebookgo/inject"
 	"github.com/gin-gonic/gin"
 	"github.com/itpkg/champak/web"
@@ -9,6 +12,7 @@ import (
 	"github.com/itpkg/champak/web/jobber"
 	"github.com/jinzhu/gorm"
 	logging "github.com/op/go-logging"
+	"github.com/spf13/viper"
 )
 
 //Engine engine model
@@ -22,8 +26,25 @@ type Engine struct {
 }
 
 //Map map objects
-func (p *Engine) Map(*inject.Graph) error {
-	return nil
+func (p *Engine) Map(inj *inject.Graph) error {
+	cip, err := aes.NewCipher([]byte(viper.GetString("secrets.aes")))
+	if err != nil {
+		return err
+	}
+
+	return inj.Provide(
+		&inject.Object{Value: cip},
+		&inject.Object{Value: cip, Name: "aes.cip"},
+		&inject.Object{Value: []byte(viper.GetString("secrets.hmac")), Name: "hmac.key"},
+		&inject.Object{Value: []byte(viper.GetString("secrets.jwt")), Name: "jwt.key"},
+		&inject.Object{Value: crypto.SigningMethodHS512, Name: "jwt.method"},
+		&inject.Object{Value: &cache.RedisStore{}},
+		&inject.Object{Value: &jobber.RedisJobber{
+			Timeout:  viper.GetInt("workers.timeout"),
+			Handlers: make(map[string]jobber.Handler),
+		}},
+	)
+
 }
 
 //Mount mount web point
