@@ -1,7 +1,21 @@
 
-{{ define "users/sign-in" }}
+{{ define "users/non-sign-in" }}
 {{template "header" .}}
-wahaha
-{{T "zh-Hans" "buttons.submit"}}
+      <div class="row">
+        <br/>
+        {{template "form" .form}}
+        <br/>
+        {{template "users/shared-links" .}}
+      </div>
 {{template "footer" .}}
+{{ end }}
+
+{{ define "users/shared-links" }}
+<ul>
+  <li><a href="/users/sign-in">{{T .locale "auth.users.sign-in"}}</a></li>
+  <li><a href="/users/sign-up">{{T .locale "auth.users.sign-up"}}</a></li>
+  <li><a href="/users/confirm">{{T .locale "auth.users.confirm"}}</a></li>
+  <li><a href="/users/unlock">{{T .locale "auth.users.unlock"}}</a></li>
+  <li><a href="/users/forgot-password">{{T .locale "auth.users.forgot-password"}}</a></li>
+</ul>
 {{ end }}

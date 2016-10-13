@@ -25,9 +25,44 @@
     {{template "meta" .}}
   </head>
   <body>
+    {{template "nav-bar" .}}
+    <div class="container">
 {{ end }}
 
 {{ define "footer" }}
+      {{template "copyright" .}}
+    </div>
   </body>
 </html>
+{{ end }}
+
+{{ define "nav-bar" }}
+    <nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">{{T .locale "site.subTitle"}}</a>
+        <ul class="nav navbar-nav">
+          <li class="nav-item active"><a class="nav-link" href="/">{{T .locale "links.home"}}</a></li>
+          <li class="nav-item"><a class="nav-link" href="/">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+{{ end }}
+
+{{ define "copyright" }}
+      <hr>
+      <footer>
+        <p class="pull-xs-right">
+          {{T .locale "this_site_in_other_languages"}}
+          <a href="/?locale=zh-CN">English</a>
+          <a href="/?locale=zh-CN">简体中文</a>
+          <a href="/?locale=zh-TW">正體中文</a>
+        </p>
+        <p>&copy; {{T .locale "site.copyright"}} &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+      </footer>
+{{ end }}
+
+{{ define "form" }}
+<h3>{{.title}}</h3>
+<hr/>
 {{ end }}
