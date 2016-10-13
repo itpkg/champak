@@ -1,5 +1,5 @@
 # champak
-A web application build by go-lang and emberjs.
+A web application build by go-lang and reactjs.
 
 ## Install go
 
@@ -25,7 +25,7 @@ PATH=$GOPATH/bin:$PATH
 export GOPATH PATH
 ```
 
-### Some other packages for development
+### For development
 
 ```
 go get -u github.com/nsf/gocode
@@ -35,9 +35,16 @@ go get -u github.com/golang/lint/golint
 
 go get -u github.com/kardianos/govendor
 
-go get -u github.com/beego/bee
 go get -u bitbucket.org/liamstask/goose/cmd/goose
-go get -u github.com/itpkg/champak.git
+go get -u github.com/itpkg/champak
+```
+
+### Start
+```
+cd $GOPATH/src/github.com/itpkg/champak
+govendor sync
+cd demo && go run main.go   # backend server
+cd front-react && npm run dev # frontend server
 ```
 
 ## Database creation
@@ -66,7 +73,8 @@ ls -lh dist
 ```
 
 ## Documents
-- [vuejs](http://vuejs.org/guide/)
+- [react](https://facebook.github.io/react/docs/getting-started.html)
+- [react-bootstrap](http://react-bootstrap.github.io/)
 - [gin](https://github.com/gin-gonic/gin)
 - [goose](https://bitbucket.org/liamstask/goose/)
 - [go-plus](https://atom.io/packages/go-plus)
