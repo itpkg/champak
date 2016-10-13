@@ -1,6 +1,3 @@
-
--- +goose Up
--- SQL in section 'Up' is executed when this migration is applied
 create table mail_transport (
   id serial primary key,
   domain varchar(128) not null,
@@ -41,12 +38,3 @@ create view postfix_virtual as
   select email, email as address from mail_users
   union all
   select source, destination from mail_virtual;
-
-
--- +goose Down
--- SQL section 'Down' is executed when this migration is rolled back
-drop view postfix_virtual;
-drop view postfix_mailboxes;
-drop table mail_virtual;
-drop table mail_users;
-drop table mail_transport;

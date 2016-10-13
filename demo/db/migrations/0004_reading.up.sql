@@ -1,6 +1,3 @@
-
--- +goose Up
--- SQL in section 'Up' is executed when this migration is applied
 create table reading_books(
   id serial primary key,
   author varchar(36) not null,
@@ -32,8 +29,3 @@ create table reading_notes(
   updated_at timestamp without time zone not null
 );
 create index idx_reading_notes_type on reading_notes(type);
-
--- +goose Down
--- SQL section 'Down' is executed when this migration is rolled back
-drop table reading_notes;
-drop table reading_books;

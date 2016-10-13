@@ -17,14 +17,29 @@ func IsProduction() bool {
 	return viper.GetString("env") == "production"
 }
 
+//DatabaseURL get database connect url
+func DatabaseURL() string {
+	//"user=%s password=%s host=%s port=%d dbname=%s sslmode=%s"
+	//"postgres://pqgotest:password@localhost/pqgotest?sslmode=verify-full")
+	// args := ""
+	// for k, v := range viper.GetStringMapString("database.args") {
+	// 	args += fmt.Sprintf(" %s=%s ", k, v)
+	// }
+	// return args
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%d/%s?sslmode=%s",
+		viper.GetString("database.args.user"),
+		viper.GetString("database.args.password"),
+		viper.GetString("database.args.host"),
+		viper.GetInt("database.args.port"),
+		viper.GetString("database.args.dbname"),
+		viper.GetString("database.args.sslmode"),
+	)
+}
+
 //OpenDatabase open database
 func OpenDatabase() (*gorm.DB, error) {
-	//postgresql: "user=%s password=%s host=%s port=%d dbname=%s sslmode=%s"
-	args := ""
-	for k, v := range viper.GetStringMapString("database.args") {
-		args += fmt.Sprintf(" %s=%s ", k, v)
-	}
-	db, err := gorm.Open(viper.GetString("database.driver"), args)
+	db, err := gorm.Open(viper.GetString("database.driver"), DatabaseURL())
 	if err != nil {
 		return nil, err
 	}

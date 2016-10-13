@@ -2,20 +2,18 @@ package ops
 
 import (
 	"crypto/x509/pkix"
-	"database/sql"
 	"fmt"
 	"html/template"
+	"log"
 	"os"
 	"path"
-	"time"
 
 	"golang.org/x/text/language"
-
-	"bitbucket.org/liamstask/goose/lib/goose"
 
 	"github.com/BurntSushi/toml"
 	"github.com/itpkg/champak/engines/auth"
 	"github.com/itpkg/champak/web"
+	"github.com/mattes/migrate/migrate"
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 )
@@ -53,11 +51,11 @@ func (p *Engine) Shell() []cli.Command {
 					Usage:   "migrate the database",
 					Aliases: []string{"m"},
 					Action: auth.Action(func(*cli.Context) error {
-						ver, err := goose.GetMostRecentDBVersion(dbMigrationsDir())
-						if err != nil {
-							return err
+						ers, ok := migrate.UpSync(auth.DatabaseURL(), dbMigrationsDir())
+						if ok {
+							return nil
 						}
-						return goose.RunMigrations(dbConf(), dbMigrationsDir(), ver)
+						return errors2(ers)
 					}),
 				},
 				{
@@ -65,16 +63,11 @@ func (p *Engine) Shell() []cli.Command {
 					Usage:   "rollback the database",
 					Aliases: []string{"r"},
 					Action: auth.Action(func(*cli.Context) error {
-						cnf := dbConf()
-						crt, err := goose.GetDBVersion(cnf)
-						if err != nil {
-							return err
+						ers, ok := migrate.DownSync(auth.DatabaseURL(), dbMigrationsDir())
+						if ok {
+							return nil
 						}
-						ver, err := goose.GetPreviousDBVersion(dbMigrationsDir(), crt)
-						if err != nil {
-							return err
-						}
-						return goose.RunMigrations(cnf, dbMigrationsDir(), ver)
+						return errors2(ers)
 					}),
 				},
 				{
@@ -82,40 +75,11 @@ func (p *Engine) Shell() []cli.Command {
 					Usage:   "show database scheme version",
 					Aliases: []string{"v"},
 					Action: auth.Action(func(*cli.Context) error {
-						cnf := dbConf()
-						migs, err := goose.CollectMigrations(dbMigrationsDir(), 0, ((1 << 63) - 1))
-						if err != nil {
-							return err
+						ver, err := migrate.Version(auth.DatabaseURL(), dbMigrationsDir())
+						if err == nil {
+							fmt.Println(ver)
 						}
-						db, err := goose.OpenDBFromDBConf(cnf)
-						if err != nil {
-							return err
-						}
-						defer db.Close()
-						if _, err = goose.EnsureDBVersion(cnf, db); err != nil {
-							return err
-						}
-						fmt.Println("    Applied At                  Migration")
-						for _, mig := range migs {
-							var row goose.MigrationRecord
-							q := fmt.Sprintf("SELECT tstamp, is_applied FROM goose_db_version WHERE version_id=%d ORDER BY tstamp DESC LIMIT 1", mig.Version)
-							e := db.QueryRow(q).Scan(&row.TStamp, &row.IsApplied)
-
-							if e != nil && e != sql.ErrNoRows {
-								return e
-							}
-
-							var appliedAt string
-
-							if row.IsApplied {
-								appliedAt = row.TStamp.Format(time.ANSIC)
-							} else {
-								appliedAt = "Pending"
-							}
-
-							fmt.Printf("    %-24s -- %v\n", appliedAt, mig.Source)
-						}
-						return nil
+						return err
 					}),
 				},
 				{
@@ -423,14 +387,13 @@ func (p *Engine) Shell() []cli.Command {
 						if err := os.MkdirAll(root, 0700); err != nil {
 							return err
 						}
-						pth, err := goose.CreateMigration(
-							c.String("name"),
-							"sql",
-							root,
-							time.Now(),
-						)
-						fmt.Printf("generate file %s\n", pth)
-						return err
+						file, err := migrate.Create(auth.DatabaseURL(), dbMigrationsDir(), name)
+						if err != nil {
+							return err
+						}
+						log.Printf("generate file %s", file.UpFile.FileName)
+						log.Printf("generate file %s", file.DownFile.FileName)
+						return nil
 					}),
 				},
 

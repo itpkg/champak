@@ -1,0 +1,9 @@
+drop table shop_returns;
+drop table shop_bills;
+drop table shop_orders;
+drop table shop_payments;
+drop table shop_deliverers;
+drop table shop_fields;
+drop table shop_prices;
+drop table shop_vendors;
+drop table shop_products;

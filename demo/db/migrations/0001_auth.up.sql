@@ -1,6 +1,3 @@
-
--- +goose Up
--- SQL in section 'Up' is executed when this migration is applied
 create table users(
   id serial primary key,
   name varchar(32) not null,
@@ -57,10 +54,3 @@ create table policies(
   updated_at timestamp without time zone not null
 );
 create unique index idx_policies_user_role on policies(user_id, role_id);
-
--- +goose Down
--- SQL section 'Down' is executed when this migration is rolled back
-drop table policies;
-drop table roles;
-drop table logs;
-drop table users;

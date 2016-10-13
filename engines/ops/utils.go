@@ -1,32 +1,19 @@
 package ops
 
 import (
-	"fmt"
+	"errors"
 	"path"
-
-	"github.com/spf13/viper"
-
-	"bitbucket.org/liamstask/goose/lib/goose"
+	"strings"
 )
 
 func dbMigrationsDir() string {
 	return path.Join("db", "migrations")
 }
 
-func dbConf() *goose.DBConf {
-	args := ""
-	for k, v := range viper.GetStringMapString("database.args") {
-		args += fmt.Sprintf(" %s=%s ", k, v)
+func errors2(ers []error) error {
+	var msg []string
+	for _, er := range ers {
+		msg = append(msg, er.Error())
 	}
-	return &goose.DBConf{
-		MigrationsDir: dbMigrationsDir(),
-		Env:           viper.GetString("env"),
-		Driver: goose.DBDriver{
-			Name:    viper.GetString("database.driver"),
-			OpenStr: args,
-			Import:  "github.com/lib/pq",
-			Dialect: &goose.PostgresDialect{},
-		},
-		PgSchema: "",
-	}
+	return errors.New(strings.Join(msg, "\n"))
 }

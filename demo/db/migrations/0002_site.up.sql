@@ -1,6 +1,3 @@
-
--- +goose Up
--- SQL in section 'Up' is executed when this migration is applied
 create table settings(
   id serial primary key,
   key varchar(255) not null,
@@ -65,12 +62,3 @@ create table pages(
 create unique index idx_pages_lang_name on pages(lang, name);
 create index idx_pages_name on pages(name);
 create index idx_pages_lang on pages(lang);
-
--- +goose Down
--- SQL section 'Down' is executed when this migration is rolled back
-drop table pages;
-drop table attachments;
-drop table leave_words;
-drop table notices;
-drop table locales;
-drop table settings;

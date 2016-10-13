@@ -1,6 +1,3 @@
-
--- +goose Up
--- SQL in section 'Up' is executed when this migration is applied
 create table forum_articles(
   id serial primary key,
   user_id int not null,
@@ -40,10 +37,3 @@ create table forum_comments(
   updated_at timestamp without time zone not null
 );
 create index idx_forum_comments on forum_comments(type);
-
--- +goose Down
--- SQL section 'Down' is executed when this migration is rolled back
-drop table forum_comments;
-drop table forum_articles_tags;
-drop table forum_tags;
-drop table forum_articles;

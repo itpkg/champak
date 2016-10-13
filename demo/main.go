@@ -10,7 +10,7 @@ import (
 	_ "github.com/itpkg/champak/engines/shop"
 	"github.com/itpkg/champak/web"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	_ "github.com/lib/pq"
+	_ "github.com/mattes/migrate/driver/postgres"
 )
 
 var version string
