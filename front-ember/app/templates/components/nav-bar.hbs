@@ -10,7 +10,24 @@
   </div>
   {{#bs-navbar-content}}
     {{#bs-navbar-nav}}
-      {{#bs-nav-item}}<a href="change-me">change-me</a>{{/bs-nav-item}}
+
+      {{#bs-nav-item}}{{#link-to "index"}}Dropdown{{/link-to}}{{/bs-nav-item}}
+      {{#bs-nav-item}}{{#link-to "index"}}Forms{{/link-to}}{{/bs-nav-item}}
+
+      {{#bs-dropdown tagName="li"}}
+        {{#bs-dropdown-toggle}}
+          {{t "language-select.switch"}}
+          <span class="caret"></span>
+        {{/bs-dropdown-toggle}}
+        {{#bs-dropdown-menu}}
+          {{#each locales as |loc|}}
+            <li>
+              <a {{action 'setLocale' loc.id}}>{{loc.text}}</a>
+            </li>
+          {{/each}}
+        {{/bs-dropdown-menu}}
+      {{/bs-dropdown}}
+
     {{/bs-navbar-nav}}
   {{/bs-navbar-content}}
 {{/bs-navbar}}
