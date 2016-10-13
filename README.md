@@ -66,7 +66,7 @@ ls -lh dist
 ```
 
 ## Documents
-
+- [vuejs](http://vuejs.org/guide/)
 - [gin](https://github.com/gin-gonic/gin)
 - [goose](https://bitbucket.org/liamstask/goose/)
 - [go-plus](https://atom.io/packages/go-plus)
