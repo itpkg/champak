@@ -7,12 +7,6 @@
 			"revision": ""
 		},
 		{
-			"checksumSHA1": "jdqLDQw64kBjkU7LPK7C+Qwj7W8=",
-			"path": "bitbucket.org/liamstask/goose/lib/goose",
-			"revision": "8488cc47d90c8a502b1c41a462a6d9cc8ee0a895",
-			"revisionTime": "2015-01-15T23:40:39Z"
-		},
-		{
 			"checksumSHA1": "hqDDDpue/5363luidNMBS8z8eJU=",
 			"path": "github.com/BurntSushi/toml",
 			"revision": "99064174e013895bbd9b025c31100bd1d9b590ca",
@@ -113,12 +107,6 @@
 			"path": "github.com/go-ini/ini",
 			"revision": "6e4869b434bd001f6983749881c7ead3545887d8",
 			"revisionTime": "2016-08-27T06:11:18Z"
-		},
-		{
-			"checksumSHA1": "jEXpLrWXoQvH/zk1lW5Si0swr6Y=",
-			"path": "github.com/go-sql-driver/mysql",
-			"revision": "0b58b37b664c21f3010e836f1b931e1d0b0b0685",
-			"revisionTime": "2016-08-02T11:38:42Z"
 		},
 		{
 			"checksumSHA1": "qjr2SKQanbmna221z0Ce2n0hnDE=",
@@ -401,24 +389,6 @@
 			"path": "github.com/urfave/cli",
 			"revision": "55f715e28c46073d0e217e2ce8eb46b0b45e3db6",
 			"revisionTime": "2016-10-06T03:53:53Z"
-		},
-		{
-			"checksumSHA1": "/q5etSYvf5zTlT4yFvufHtIruPM=",
-			"path": "github.com/ziutek/mymysql/godrv",
-			"revision": "df6241f6355c5595d99e9661039f8648c440deba",
-			"revisionTime": "2016-09-09T22:10:29Z"
-		},
-		{
-			"checksumSHA1": "eXEiPlpDRaamJQ4vPX/9t333kQc=",
-			"path": "github.com/ziutek/mymysql/mysql",
-			"revision": "df6241f6355c5595d99e9661039f8648c440deba",
-			"revisionTime": "2016-09-09T22:10:29Z"
-		},
-		{
-			"checksumSHA1": "gsr2Hefl2uwZd95XjCqkZv8fx0o=",
-			"path": "github.com/ziutek/mymysql/native",
-			"revision": "df6241f6355c5595d99e9661039f8648c440deba",
-			"revisionTime": "2016-09-09T22:10:29Z"
 		},
 		{
 			"checksumSHA1": "h+pFYiRHBogczS8/F1NoN3Ata44=",
