@@ -6,8 +6,8 @@ export default Ember.Service.extend({
   init() {
     this._super(...arguments);
     this.get('ajax').request('/siteInfo').then(function(rst) {
-      document.title = rst.title;      
+      document.title = rst.title;
       this.set('item', rst);
     }.bind(this));
-  },
+  }
 });

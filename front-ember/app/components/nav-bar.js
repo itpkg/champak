@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import Cookies from 'js-cookie';
 
 export default Ember.Component.extend({
   i18n: Ember.inject.service(),
@@ -15,6 +16,7 @@ export default Ember.Component.extend({
 
   actions: {
     setLocale(lang) {
+      Cookies.set('locale', lang, { expires: 7 });
       localStorage.setItem("locale", lang);
       this.set('i18n.locale', lang);
     }

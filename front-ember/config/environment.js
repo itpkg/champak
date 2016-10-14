@@ -26,7 +26,9 @@ module.exports = function(environment) {
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
 
-    ENV.backend = {host: "http://localhost:8080"}
+    ENV.backend = {
+      host: "http://localhost:8080"    
+    }
   }
 
   if (environment === 'test') {

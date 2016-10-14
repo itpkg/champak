@@ -1,5 +1,14 @@
 import AjaxService from 'ember-ajax/services/ajax';
+import $ from 'jquery';
+
 import ENV from 'front-ember/config/environment';
+
+$.ajaxSetup({    
+    xhrFields: {
+       withCredentials: true
+    },
+    crossDomain: true
+});
 
 export default AjaxService.extend(ENV.backend);
 // export default AjaxService.extend({
