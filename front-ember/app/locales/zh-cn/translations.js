@@ -8,7 +8,8 @@ export default {
     }
   },
   "links": {
-    "home": "主页"
+    "home": "主页",
+    "back_to_home": "返回主页"
   }
   // "some.translation.key": "Text for some.translation.key",
   //

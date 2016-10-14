@@ -8,7 +8,8 @@ export default {
     }
   },
   "links": {
-    "home": "Home"
+    "home": "Home",
+    "back_to_home": "Back to home"
   }
   // "some.translation.key": "Text for some.translation.key",
   //

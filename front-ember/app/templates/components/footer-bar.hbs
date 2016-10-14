@@ -1,1 +1,15 @@
-<h4>footer bar</h4>
+<div class="row">
+  <hr>
+  <footer>
+    <p class="pull-right">
+      {{#link-to "index"}}{{t "links.back_to_home"}}{{/link-to}}
+    </p>
+    <p>
+      &copy; {{siteInfo.item.copyright}}
+      {{#each siteInfo.item.bottomLinks as | lk |}}
+        &middot;
+        {{#link-to lk.href}}{{lk.label}}{{/link-to}}
+      {{/each}}
+     </p>
+  </footer>
+</div>
