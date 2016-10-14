@@ -17,6 +17,7 @@ import (
 //Engine engine model
 type Engine struct {
 	Cache     cache.Store     `inject:""`
+	Dao       *Dao            `inject:""`
 	Db        *gorm.DB        `inject:""`
 	Jobber    jobber.Jobber   `inject:""`
 	Logger    *logging.Logger `inject:""`

@@ -2,6 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   i18n: Ember.inject.service(),
+  siteInfo: Ember.inject.service(),
   locales: Ember.computed('i18n.locale', 'i18n.locales', function() {
     const i18n = this.get('i18n');
     return this.get('i18n.locales').map(function(loc) {
@@ -14,7 +15,7 @@ export default Ember.Component.extend({
 
   actions: {
     setLocale(lang) {
-      localStorage.setItem("locale", lang);            
+      localStorage.setItem("locale", lang);
       this.set('i18n.locale', lang);
     }
   }
