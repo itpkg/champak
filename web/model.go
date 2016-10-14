@@ -8,3 +8,9 @@ type Model struct {
 	CreatedAt time.Time `json:"updated_at"`
 	UpdatedAt time.Time `json:"created_at"`
 }
+
+//Link link
+type Link struct {
+	Href  string `json:"href"`
+	Label string `json:"label"`
+}

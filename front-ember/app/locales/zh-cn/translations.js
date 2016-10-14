@@ -6,6 +6,9 @@ export default {
       "zh-cn": "简体中文",
       "zh-tw": "正體中文"
     }
+  },
+  "links": {
+    "home": "主页"
   }
   // "some.translation.key": "Text for some.translation.key",
   //
